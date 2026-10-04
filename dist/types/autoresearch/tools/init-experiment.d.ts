@@ -1,0 +1,30 @@
+import { type InitExperimentDetails } from "@oh-my-pi/pi-tui-zh/tools/autoresearch";
+import type { ToolDefinition } from "../../extensibility/extensions/index.js";
+import type { AutoresearchToolFactoryOptions } from "../types.js";
+declare const initExperimentSchema: import("@oh-my-pi/omptype").FluentType<{
+    constraints?: string[] | undefined;
+    direction?: "higher" | "lower" | undefined;
+    goal?: string | undefined;
+    max_iterations?: number | undefined;
+    metric_unit?: string | undefined;
+    name: string;
+    new_segment?: boolean | undefined;
+    off_limits?: string[] | undefined;
+    primary_metric: string;
+    scope_paths?: string[] | undefined;
+    secondary_metrics?: string[] | undefined;
+}, {
+    constraints?: string[] | undefined;
+    direction?: "higher" | "lower" | undefined;
+    goal?: string | undefined;
+    max_iterations?: number | undefined;
+    metric_unit?: string | undefined;
+    name: string;
+    new_segment?: boolean | undefined;
+    off_limits?: string[] | undefined;
+    primary_metric: string;
+    scope_paths?: string[] | undefined;
+    secondary_metrics?: string[] | undefined;
+}>;
+export declare function createInitExperimentTool(options: AutoresearchToolFactoryOptions): ToolDefinition<typeof initExperimentSchema, InitExperimentDetails>;
+export {};

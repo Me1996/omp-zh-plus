@@ -1,0 +1,92 @@
+import { runPauseScreen } from "@oh-my-pi/pi-tui-zh/overlays/pause-screen";
+import { clearSubmittedText } from "./helpers/draft";
+import { shutdownHandlerTui } from "./builtin-lifecycle";
+import { commandConsumed, errorMessage, usage } from "./helpers/parse";
+import type { SlashCommandSpec } from "./types";
+
+export const BUILTIN_CONTROL_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
+	{
+		name: "force",
+		icon: "hammer",
+		description: "强制下一轮使用指定工具",
+		aliases: ["force:"],
+		inlineHint: "<工具名> [提示]",
+		allowArgs: true,
+		getTuiAutocompleteDescription: runtime => {
+			const count = runtime.ctx.session.getActiveToolNames().length;
+			return count === 0 ? "强制:无活动工具" : `强制:${count} 个活动工具`;
+		},
+		handle: async (command, runtime) => {
+			const spaceIdx = command.args.indexOf(" ");
+			const toolName = spaceIdx === -1 ? command.args : command.args.slice(0, spaceIdx);
+			const prompt = spaceIdx === -1 ? "" : command.args.slice(spaceIdx + 1).trim();
+			if (!toolName) return usage("用法:/force:<工具名> [提示]", runtime);
+			try {
+				runtime.session.setForcedToolChoice(toolName);
+			} catch (err) {
+				return usage(errorMessage(err), runtime);
+			}
+			await runtime.output(`下一轮将强制使用 ${toolName}。`);
+			return prompt ? { prompt } : commandConsumed();
+		},
+		handleTui: (command, runtime) => {
+			const spaceIdx = command.args.indexOf(" ");
+			const toolName = spaceIdx === -1 ? command.args : command.args.slice(0, spaceIdx);
+			const prompt = spaceIdx === -1 ? "" : command.args.slice(spaceIdx + 1).trim();
+
+			if (!toolName) {
+				runtime.ctx.showError("用法:/force:<工具名> [提示]");
+				clearSubmittedText(runtime);
+				return;
+			}
+
+			try {
+				runtime.ctx.session.setForcedToolChoice(toolName);
+				runtime.ctx.showStatus(`下一轮将强制使用 ${toolName}。`);
+			} catch (error) {
+				runtime.ctx.showError(errorMessage(error));
+				clearSubmittedText(runtime);
+				return;
+			}
+
+			clearSubmittedText(runtime);
+
+			// If a prompt was provided, pass it through as input
+			if (prompt) return { prompt };
+		},
+	},
+	{
+		name: "live",
+		icon: "voice",
+		description: "启动 Codex 实时语音模式",
+		handleTui: async (_command, runtime) => {
+			clearSubmittedText(runtime);
+			await runtime.ctx.handleLiveCommand();
+		},
+	},
+	{
+		name: "record",
+		icon: "export",
+		description: "开始或停止将本屏幕录制为可回放文件(omp play)",
+		handleTui: async (_command, runtime) => {
+			clearSubmittedText(runtime);
+			await runtime.ctx.toggleRecording();
+		},
+	},
+	{
+		name: "pause",
+		icon: "pause",
+		description: "冻结所有代理(主代理、子代理、顾问)直至恢复",
+		handleTui: async (_command, runtime) => {
+			clearSubmittedText(runtime);
+			await runPauseScreen(runtime.ctx);
+		},
+	},
+	{
+		name: "quit",
+		aliases: ["q"],
+		icon: "power",
+		description: "退出应用",
+		handleTui: shutdownHandlerTui,
+	},
+];

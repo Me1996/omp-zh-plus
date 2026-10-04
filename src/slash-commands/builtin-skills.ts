@@ -1,0 +1,147 @@
+import type { InteractiveModeContext } from "../modes/types";
+import { SkillshareClient } from "../skillshare/client";
+import {
+	formatInstalledSkills,
+	formatScriptApproval,
+	formatSkillChanges,
+	formatSkillSearch,
+	installSkillPackages,
+	listInstalledSkills,
+	type SkillChange,
+	type SkillInstallHooks,
+	updateSkillPackages,
+} from "../skillshare/installer";
+import { clearSubmittedText } from "./helpers/draft";
+import { errorMessage, parseSubcommand } from "./helpers/parse";
+import type { SlashCommandSpec } from "./types";
+
+const USAGE = [
+	"技能注册表(skills.omp.sh)命令:",
+	"  /skills search <query>                        搜索注册表",
+	"  /skills install <@scope/name[@range]>… [-g]   安装到本项目(-g:用户全局)",
+	"  /skills installed                             列出已安装的注册表技能",
+	"  /skills update [@scope/name…] [-g]            按 skills.json 中的版本范围更新",
+].join("\n");
+
+/** Split `<name…> [--global|-g]`; unknown flags are errors. */
+function parseTargets(rest: string): { names: string[]; global: boolean } | { error: string } {
+	const names: string[] = [];
+	let global = false;
+	for (const token of rest.split(/\s+/)) {
+		if (!token) continue;
+		if (token === "--global" || token === "-g") global = true;
+		else if (token.startsWith("-")) return { error: `未知选项:${token}\n\n${USAGE}` };
+		else names.push(token);
+	}
+	return { names, global };
+}
+
+async function withClient<T>(run: (client: SkillshareClient) => Promise<T>): Promise<T> {
+	const client = await SkillshareClient.create();
+	try {
+		return await run(client);
+	} finally {
+		client.close();
+	}
+}
+
+function tuiHooks(ctx: InteractiveModeContext): SkillInstallHooks {
+	return {
+		warn: message => ctx.showWarning(message),
+		confirmScripts: request => ctx.showHookConfirm("安装带脚本的技能?", formatScriptApproval(request)),
+	};
+}
+
+async function reportChanges(ctx: InteractiveModeContext, changes: SkillChange[]): Promise<void> {
+	if (changes.length === 0) {
+		ctx.showStatus("注册表技能已是最新。");
+		return;
+	}
+	await ctx.refreshSkillState();
+	ctx.showStatus(formatSkillChanges(changes));
+}
+
+export const BUILTIN_SKILLS_SLASH_COMMANDS: ReadonlyArray<SlashCommandSpec> = [
+	{
+		name: "skills",
+		icon: "skill",
+		description: "从 skills.omp.sh 注册表搜索、安装和更新技能",
+		subcommands: [
+			{ name: "search", description: "搜索技能注册表", usage: "<query>" },
+			{ name: "install", description: "安装注册表技能", usage: "<@scope/name[@range]>… [--global]" },
+			{ name: "installed", description: "列出已安装的注册表技能" },
+			{
+				name: "update",
+				description: "在版本范围内更新注册表技能",
+				usage: "[@scope/name…] [--global]",
+			},
+		],
+		allowArgs: true,
+		handleTui: async (command, runtime) => {
+			const { ctx } = runtime;
+			clearSubmittedText(runtime);
+			const { verb, rest } = parseSubcommand(command.args);
+			const cwd = ctx.sessionManager.getCwd();
+			try {
+				switch (verb) {
+					case "search": {
+						if (!rest) {
+							ctx.showError("用法:/skills search <query>");
+							return;
+						}
+						const response = await withClient(client => client.search(rest));
+						ctx.showStatus(formatSkillSearch(response));
+						return;
+					}
+					case "install": {
+						const targets = parseTargets(rest);
+						if ("error" in targets) {
+							ctx.showError(targets.error);
+							return;
+						}
+						if (targets.names.length === 0) {
+							ctx.showError("用法:/skills install <@scope/name[@range]>… [--global]");
+							return;
+						}
+						ctx.showStatus(`正在安装 ${targets.names.join(", ")}…`, { dim: true });
+						const changes = await withClient(client =>
+							installSkillPackages(
+								client,
+								{ specs: targets.names, global: targets.global, yes: false, cwd },
+								tuiHooks(ctx),
+							),
+						);
+						await reportChanges(ctx, changes);
+						return;
+					}
+					case "installed": {
+						ctx.showStatus(formatInstalledSkills(await listInstalledSkills(cwd)));
+						return;
+					}
+					case "update": {
+						const targets = parseTargets(rest);
+						if ("error" in targets) {
+							ctx.showError(targets.error);
+							return;
+						}
+						ctx.showStatus("正在检查注册表更新…", { dim: true });
+						const changes = await withClient(client =>
+							updateSkillPackages(client, { names: targets.names, global: targets.global, cwd }, tuiHooks(ctx)),
+						);
+						await reportChanges(ctx, changes);
+						return;
+					}
+					case "":
+					case "help":
+						ctx.showStatus(USAGE);
+						return;
+					default:
+						ctx.showError(`未知的 /skills 子命令:${verb}\n\n${USAGE}`);
+						return;
+				}
+			} catch (error) {
+				ctx.showError(`技能:${errorMessage(error)}`);
+			}
+		},
+	},
+];

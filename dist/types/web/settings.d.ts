@@ -1,0 +1,10 @@
+export declare const cfgExaEnabled: import("../config/registry.js").Setting<boolean, "exa.enabled">;
+export declare const cfgExaSearchDelayMs: import("../config/registry.js").Setting<number, "exa.searchDelayMs">;
+export declare const cfgSearxngEndpoint: import("../config/registry.js").Setting<string | undefined, "searxng.endpoint">;
+export declare const cfgSearxngToken: import("../config/registry.js").Setting<string | undefined, "searxng.token">;
+export declare const cfgSearxngBasicUsername: import("../config/registry.js").Setting<string | undefined, "searxng.basicUsername">;
+export declare const cfgSearxngBasicPassword: import("../config/registry.js").Setting<string | undefined, "searxng.basicPassword">;
+export declare const cfgSearxngCategories: import("../config/registry.js").Setting<string | undefined, "searxng.categories">;
+export declare const cfgSearxngEngines: import("../config/registry.js").Setting<string | undefined, "searxng.engines">;
+export declare const cfgSearxngLanguage: import("../config/registry.js").Setting<string | undefined, "searxng.language">;
+export declare const cfgSearxngSafesearch: import("../config/registry.js").Setting<number | undefined, "searxng.safesearch">;

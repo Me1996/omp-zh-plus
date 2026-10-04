@@ -1,0 +1,13 @@
+import type { SessionEntry } from "../session/session-entries.js";
+import type { RunRow, SessionRow } from "./storage.js";
+import type { AutoresearchRuntime, ReconstructedControlState, RuntimeStore } from "./types.js";
+import type { ExperimentResult, ExperimentState, MetricDirection } from "@oh-my-pi/pi-tui-zh/tools/autoresearch";
+export declare function createExperimentState(): ExperimentState;
+export declare function createSessionRuntime(): AutoresearchRuntime;
+export declare function cloneExperimentState(state: ExperimentState): ExperimentState;
+export declare function findBestKeptMetric(results: ExperimentResult[], segment: number, direction: MetricDirection): number | null;
+export declare function sortedMedian(values: number[]): number;
+export declare function computeConfidence(results: ExperimentResult[], segment: number, direction: MetricDirection): number | null;
+export declare function buildExperimentState(session: SessionRow, loggedRuns: RunRow[]): ExperimentState;
+export declare function reconstructControlState(entries: SessionEntry[]): ReconstructedControlState;
+export declare function createRuntimeStore(): RuntimeStore;

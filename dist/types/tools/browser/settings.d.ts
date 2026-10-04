@@ -1,0 +1,10 @@
+export declare const cfgBrowserEnabled: import("../../config/registry.js").Setting<boolean, "browser.enabled">;
+export declare const cfgBrowserCdpUrl: import("../../config/registry.js").Setting<string | undefined, "browser.cdpUrl">;
+export declare const cfgBrowserRelay: import("../../config/registry.js").Setting<boolean, "browser.relay">;
+export declare const cfgBrowserRelayUrl: import("../../config/registry.js").Setting<string | undefined, "browser.relayUrl">;
+export declare const cfgBrowserHeadless: import("../../config/registry.js").Setting<boolean, "browser.headless">;
+export declare const cfgBrowserCmux: import("../../config/registry.js").Setting<boolean, "browser.cmux">;
+export declare const cfgBrowserTern: import("../../config/registry.js").Setting<boolean, "browser.tern">;
+export declare const cfgBrowserFreezeOnTurnEnd: import("../../config/registry.js").Setting<boolean, "browser.freezeOnTurnEnd">;
+export declare const cfgBrowserIdleCloseSec: import("../../config/registry.js").Setting<number, "browser.idleCloseSec">;
+export declare const cfgBrowserScreenshotDir: import("../../config/registry.js").Setting<string | undefined, "browser.screenshotDir">;

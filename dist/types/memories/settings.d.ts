@@ -1,0 +1,16 @@
+export declare const cfgMemoriesEnabled: import("../config/registry.js").Setting<boolean, "memories.enabled">;
+export declare const cfgMemoriesMaxRolloutsPerStartup: import("../config/registry.js").Setting<number, "memories.maxRolloutsPerStartup">;
+export declare const cfgMemoriesMaxRolloutAgeDays: import("../config/registry.js").Setting<number, "memories.maxRolloutAgeDays">;
+export declare const cfgMemoriesMinRolloutIdleHours: import("../config/registry.js").Setting<number, "memories.minRolloutIdleHours">;
+export declare const cfgMemoriesThreadScanLimit: import("../config/registry.js").Setting<number, "memories.threadScanLimit">;
+export declare const cfgMemoriesMaxRawMemoriesForGlobal: import("../config/registry.js").Setting<number, "memories.maxRawMemoriesForGlobal">;
+export declare const cfgMemoriesStage1Concurrency: import("../config/registry.js").Setting<number, "memories.stage1Concurrency">;
+export declare const cfgMemoriesStage1LeaseSeconds: import("../config/registry.js").Setting<number, "memories.stage1LeaseSeconds">;
+export declare const cfgMemoriesStage1RetryDelaySeconds: import("../config/registry.js").Setting<number, "memories.stage1RetryDelaySeconds">;
+export declare const cfgMemoriesPhase2LeaseSeconds: import("../config/registry.js").Setting<number, "memories.phase2LeaseSeconds">;
+export declare const cfgMemoriesPhase2RetryDelaySeconds: import("../config/registry.js").Setting<number, "memories.phase2RetryDelaySeconds">;
+export declare const cfgMemoriesPhase2HeartbeatSeconds: import("../config/registry.js").Setting<number, "memories.phase2HeartbeatSeconds">;
+export declare const cfgMemoriesRolloutPayloadPercent: import("../config/registry.js").Setting<number, "memories.rolloutPayloadPercent">;
+export declare const cfgMemoriesPhase1InputTokenLimit: import("../config/registry.js").Setting<number, "memories.phase1InputTokenLimit">;
+export declare const cfgMemoriesFallbackTokenLimit: import("../config/registry.js").Setting<number, "memories.fallbackTokenLimit">;
+export declare const cfgMemoriesSummaryInjectionTokenLimit: import("../config/registry.js").Setting<number, "memories.summaryInjectionTokenLimit">;

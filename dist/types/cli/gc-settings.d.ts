@@ -1,0 +1,9 @@
+export declare const cfgGcBlobs: import("../config/registry.js").Setting<boolean, "gc.blobs">;
+export declare const cfgGcArchive: import("../config/registry.js").Setting<boolean, "gc.archive">;
+export declare const cfgGcWal: import("../config/registry.js").Setting<boolean, "gc.wal">;
+export declare const cfgGcColdArchiveAfterDays: import("../config/registry.js").Setting<number, "gc.coldArchiveAfterDays">;
+export declare const cfgGcRetainNewestGlobal: import("../config/registry.js").Setting<number, "gc.retainNewestGlobal">;
+export declare const cfgGcRetainNewestPerCwd: import("../config/registry.js").Setting<number, "gc.retainNewestPerCwd">;
+export declare const cfgGcStale: import("../config/registry.js").Setting<boolean, "gc.stale">;
+export declare const cfgGcStaleRetainNewest: import("../config/registry.js").Setting<number, "gc.staleRetainNewest">;
+export declare const cfgGcStaleRetainDays: import("../config/registry.js").Setting<number, "gc.staleRetainDays">;
